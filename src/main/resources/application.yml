@@ -1,0 +1,17 @@
+server:
+  port: 8761
+  tomcat:
+    accept-count: 200  #tomcat接受排队的最大数量
+    max-connections: 2000 #tomcat处理的最大连接数
+    connection-timeout: 5s
+    threads:
+      min-spare: 100 # 最小工作空闲线程数，默认10。（适当增大一些，以便应对突然增长的访问量）
+      max: 1000
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
