@@ -1,0 +1,69 @@
+# @Date:   2019-05-30T17:25:14+08:00
+# @Email:  1483993157@qq.com
+# @Last modified time: 2019-06-14T10:14:57+08:00
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: eureka
+  namespace: gvsun-test
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: deployment-gvsun-test-eureka
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        workload.user.cattle.io/workloadselector: deployment-gvsun-test-eureka
+    spec:
+      containers:
+      - env:
+        - name: kafka_host
+          value: 192.168.1.171:9092
+        image: 192.168.1.134:443/lubanlou/eureka:${CICD_GIT_TAG}
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 2
+          successThreshold: 1
+          tcpSocket:
+            port: 8761
+          timeoutSeconds: 2
+        name: eureka
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 2
+          successThreshold: 2
+          tcpSocket:
+            port: 8761
+          timeoutSeconds: 2
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          procMount: Default
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsConfig: {}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: ems-harbor
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
